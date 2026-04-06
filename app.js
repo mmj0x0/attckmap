@@ -1092,6 +1092,55 @@ const ATTACK_DB = {
   "mitre_ref": "T1053.007"
 },
 
+// === PROFNET — COMPLETE ATTACK_DB BLOCK ===
+"PROFINETRECON-1": {
+  "name": "Profinet Device Discovery (DCP)",
+  "description": "Enumerate Profinet devices via Discovery and Configuration Protocol.",
+  "test_note": "Wireshark filter: profinet.dcp; or scapy sendp(Ether()/ProfinetDCP())",
+  "category": "1_PROFINETRECON",
+  "platform": "profinet",
+  "custom": true
+},
+"PROFINETTRAFFIC-1": {
+  "name": "Profinet Traffic Interception & MITM",
+  "description": "Capture real-time IO data and CM packets.",
+  "test_note": "Wireshark + ARP spoof; mitmproxy on Profinet RT/IRT",
+  "category": "2_PROFINETTRAFFIC",
+  "platform": "profinet",
+  "mitre_ref": "T1040"
+},
+"PROFINETREPLAY-1": {
+  "name": "Profinet Command Replay Attack",
+  "description": "Replay captured Write/ReadRecord or CM packets (no sender validation).",
+  "test_note": "tcpdump capture → scapy replay; forces unauthorized config change",
+  "category": "3_PROFINETREPLAY",
+  "platform": "profinet",
+  "custom": true
+},
+"PROFINETDOS-1": {
+  "name": "Profinet Diagnostic Packet Flood (DoS/Reboot)",
+  "description": "Flood with legitimate DCP diagnostic requests → device crash/reboot.",
+  "test_note": "scapy loop sending ProfinetDCP(ident_req); Claroty/Dragos observed DoS",
+  "category": "4_PROFINETDOS",
+  "platform": "profinet",
+  "custom": true
+},
+"PROFINETUNAUTH-1": {
+  "name": "Profinet Unauthenticated Configuration Write",
+  "description": "Write arbitrary parameters via RecordDataWrite without auth.",
+  "test_note": "Profinet CM WriteRecord packet (no challenge-response)",
+  "category": "5_PROFINETUNAUTH",
+  "platform": "profinet",
+  "custom": true
+},
+"PROFINETUNAUTH-2": {
+  "name": "Profinet I/O Data Manipulation",
+  "description": "Spoof RT/IRT frames to alter process values.",
+  "test_note": "Scapy Ether()/ProfinetIO() with forged cycle counter",
+  "category": "5_PROFINETUNAUTH",
+  "platform": "profinet",
+  "mitre_ref": "T1565"
+},
 
 
 };
