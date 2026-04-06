@@ -1324,7 +1324,49 @@ const ATTACK_DB = {
   "category": "5_OPCUAUNAUTH",
   "platform": "opcua",
   "custom": true
-}
+},
+
+// === IO-LINK ===
+"IOLINKRECON-1": {
+  "name": "IO-Link Master/Slave Enumeration",
+  "description": "Discover ports and device IDs via IODD.",
+  "test_note": "IO-Link master tools or Wireshark iolink",
+  "category": "1_IOLINKRECON",
+  "platform": "iolink",
+  "custom": true
+},
+"IOLINKTRAFFIC-1": {
+  "name": "IO-Link Process Data Interception",
+  "description": "Capture ISDU and cyclic PDUs.",
+  "test_note": "Passive tap on IO-Link master port",
+  "category": "2_IOLINKTRAFFIC",
+  "platform": "iolink",
+  "custom": true
+},
+"IOLINKREPLAY-1": {
+  "name": "IO-Link Parameter Replay Attack",
+  "description": "Replay ISDU write commands.",
+  "test_note": "Capture → replay; alters sensor config",
+  "category": "3_IOLINKREPLAY",
+  "platform": "iolink",
+  "custom": true
+},
+"IOLINKDOS-1": {
+  "name": "IO-Link Malformed ISDU DoS",
+  "description": "Flood with invalid index/length → port lockup.",
+  "test_note": "Scapy IO-Link with corrupted checksum",
+  "category": "4_IOLINKDOS",
+  "platform": "iolink",
+  "custom": true
+},
+"IOLINKUNAUTH-1": {
+  "name": "IO-Link Unauthenticated Parameter Write",
+  "description": "Write device parameters without authentication.",
+  "test_note": "Direct ISDU WriteIndex to master",
+  "category": "5_IOLINKUNAUTH",
+  "platform": "iolink",
+  "custom": true
+},
 
 };
 
