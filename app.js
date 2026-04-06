@@ -1697,6 +1697,223 @@ const ATTACK_DB = {
   "mitre_ref": "AML.T0048"
 },
 
+// === REVERSE ENGINEERING ===
+"RECON-1": {
+  "name": "Binary Fingerprinting & Format Detection",
+  "description": "Identify file type, architecture, compiler, and packer signatures.",
+  "test_note": "file binary; die -c binary; binwalk -B binary; CFF Explorer / PEiD",
+  "category": "1_RECON",
+  "platform": "reverse",
+  "custom": true
+},
+"RECON-2": {
+  "name": "Compiler & Linker Artifact Detection",
+  "description": "Detect Visual Studio, GCC, clang, .NET, Delphi, or Rust signatures.",
+  "test_note": "strings binary | grep -E 'GCC|MSVC|Delphi|Rust'; Detect It Easy (DIE)",
+  "category": "1_RECON",
+  "platform": "reverse",
+  "custom": true
+},
+"RECON-3": {
+  "name": "Section & Import Table Recon",
+  "description": "Map sections, imports, exports, and dynamic linking.",
+  "test_note": "readelf -S binary; objdump -p binary; rabin2 -I binary",
+  "category": "1_RECON",
+  "platform": "reverse",
+  "mitre_ref": "T1082"
+},
+
+"STATIC-1": {
+  "name": "String Extraction & Secret Harvesting",
+  "description": "Extract plaintext strings, URLs, keys, and obfuscated constants.",
+  "test_note": "strings -n 8 binary | grep -Ei 'pass|key|token|secret|http'; floss -q binary",
+  "category": "2_STATIC",
+  "platform": "reverse",
+  "mitre_ref": "T1552.001"
+},
+"STATIC-2": {
+  "name": "Disassembly & Static Code Review",
+  "description": "Linear sweep or recursive disassembly of code sections.",
+  "test_note": "objdump -d binary; r2 -c 'aaa; afl' binary; Ghidra headless analysis",
+  "category": "2_STATIC",
+  "platform": "reverse",
+  "custom": true
+},
+"STATIC-3": {
+  "name": "Control Flow Graph & Call Graph Generation",
+  "description": "Build CFG and call graph for high-level logic understanding.",
+  "test_note": "Ghidra (CodeBrowser) or IDA Pro → View → Graphs",
+  "category": "2_STATIC",
+  "platform": "reverse",
+  "custom": true
+},
+"STATIC-4": {
+  "name": "Symbol & Debug Info Recovery",
+  "description": "Recover stripped symbols, DWARF, PDB, or RTTI.",
+  "test_note": "rabin2 -s binary; readelf --debug-dump=info binary; pdbparse",
+  "category": "2_STATIC",
+  "platform": "reverse",
+  "custom": true
+},
+
+"DYNAMIC-1": {
+  "name": "Dynamic Analysis Setup (Debugger Attachment)",
+  "description": "Attach debugger and set initial breakpoints on entry point.",
+  "test_note": "x64dbg / x32dbg → File → Open; gdb -q -p <PID>; Frida attach",
+  "category": "3_DYNAMIC",
+  "platform": "reverse",
+  "custom": true
+},
+"DYNAMIC-2": {
+  "name": "Runtime Memory Inspection & Dumping",
+  "description": "Dump process memory, heap, stack, and registers.",
+  "test_note": "procdump -ma <PID>; gcore <PID>; x64dbg → Memory Map → Dump",
+  "category": "3_DYNAMIC",
+  "platform": "reverse",
+  "mitre_ref": "T1003"
+},
+"DYNAMIC-3": {
+  "name": "API Hooking & Function Tracing",
+  "description": "Trace calls to critical APIs (WinAPI, libc, JNI, etc.).",
+  "test_note": "frida-trace -f binary -j '!*'; API Monitor; x64dbg conditional breakpoints",
+  "category": "3_DYNAMIC",
+  "platform": "reverse",
+  "custom": true
+},
+"DYNAMIC-4": {
+  "name": "Process Injection & Behavior Monitoring",
+  "description": "Monitor file, registry, network, and child process activity.",
+  "test_note": "ProcMon (Windows) / strace / dtrace (Linux/macOS); Frida stalker",
+  "category": "3_DYNAMIC",
+  "platform": "reverse",
+  "custom": true
+},
+
+"DEOBF-1": {
+  "name": "Deobfuscation of String Encryption",
+  "description": "Identify and decrypt XOR, RC4, AES, or custom string obfuscation.",
+  "test_note": "FindCrypto plugin in Ghidra/IDA; x64dbg script or Frida hook decrypt function",
+  "category": "4_DEOBF",
+  "platform": "reverse",
+  "custom": true
+},
+"DEOBF-2": {
+  "name": "Virtualization / VMProtect / Themida Unpacking",
+  "description": "Defeat commercial virtualizers and packers.",
+  "test_note": "Scylla / UnpackMe scripts; x64dbg + TitanHide; VMProtect manual unpacking",
+  "category": "4_DEOBF",
+  "platform": "reverse",
+  "custom": true
+},
+"DEOBF-3": {
+  "name": "Control Flow Flattening & Obfuscation Removal",
+  "description": "Reconstruct original control flow from flattened graphs.",
+  "test_note": "Ghidra deobfuscation scripts; r2 deobf plugins; BinNavi",
+  "category": "4_DEOBF",
+  "platform": "reverse",
+  "custom": true
+},
+
+"PATCH-1": {
+  "name": "Binary Patching (NOP, JMP, Patch Bytes)",
+  "description": "Modify code flow or bypass checks directly in binary.",
+  "test_note": "x64dbg → Assemble; Ghidra → Patch Instruction; r2 'wa' command",
+  "category": "5_PATCH",
+  "platform": "reverse",
+  "custom": true
+},
+"PATCH-2": {
+  "name": "License / Trial Bypass Patching",
+  "description": "Patch time checks, license validation, or nag screens.",
+  "test_note": "Search for 'trial expired' strings; patch conditional jump to unconditional",
+  "category": "5_PATCH",
+  "platform": "reverse",
+  "custom": true
+},
+"PATCH-3": {
+  "name": "Anti-Debug & Anti-VM Bypass Patching",
+  "description": "Remove IsDebuggerPresent, timing checks, or VM artifacts.",
+  "test_note": "Patch calls to CheckRemoteDebuggerPresent / GetTickCount; Frida anti-anti-debug",
+  "category": "5_PATCH",
+  "platform": "reverse",
+  "custom": true
+},
+
+"FIRMWARE-1": {
+  "name": "Firmware Extraction & Carving",
+  "description": "Extract firmware from devices, updates, or flash dumps.",
+  "test_note": "binwalk -e firmware.bin; dd if=/dev/mtd0 of=dump.bin",
+  "category": "6_FIRMWARE",
+  "platform": "reverse",
+  "custom": true
+},
+"FIRMWARE-2": {
+  "name": "Embedded Linux / U-Boot RE",
+  "description": "Reverse bootloaders, kernel modules, and rootfs.",
+  "test_note": "unsquashfs rootfs; vmlinux-to-elf; Ghidra on kernel",
+  "category": "6_FIRMWARE",
+  "platform": "reverse",
+  "custom": true
+},
+
+"MOBILE-1": {
+  "name": "APK / IPA Static Extraction",
+  "description": "Decompile Android APK or iOS IPA.",
+  "test_note": "apktool d app.apk; jadx-gui app.apk; unzip app.ipa && plutil",
+  "category": "7_MOBILE",
+  "platform": "reverse",
+  "custom": true
+},
+"MOBILE-2": {
+  "name": "Frida Dynamic Instrumentation (Mobile)",
+  "description": "Hook Java/Kotlin/ObjC methods at runtime.",
+  "test_note": "frida -U -f com.app.id -l hook.js; objection explore",
+  "category": "7_MOBILE",
+  "platform": "reverse",
+  "custom": true
+},
+
+"MANAGED-1": {
+  "name": ".NET / C# Decompilation",
+  "description": "Decompile managed binaries to readable C#.",
+  "test_note": "dnSpy / dotPeek / ILSpy",
+  "category": "8_MANAGED",
+  "platform": "reverse",
+  "custom": true
+},
+"MANAGED-2": {
+  "name": "Java / Kotlin Decompilation",
+  "description": "Decompile JAR / DEX / class files.",
+  "test_note": "jadx-gui; CFR; JD-GUI",
+  "category": "8_MANAGED",
+  "platform": "reverse",
+  "custom": true
+},
+
+"ADVANCED-1": {
+  "name": "Symbol Recovery & Function Naming",
+  "description": "Recover or apply meaningful names to stripped functions.",
+  "test_note": "Ghidra Auto Analysis + FLIRT signatures; r2 'af' + 'afl'",
+  "category": "9_ADVANCED",
+  "platform": "reverse",
+  "custom": true
+},
+"ADVANCED-2": {
+  "name": "Crypto Algorithm Identification & Attack",
+  "description": "Locate and break custom or standard crypto routines.",
+  "test_note": "FindCrypt / FindCrypto plugins; manual constant search (AES S-box)",
+  "category": "9_ADVANCED",
+  "platform": "reverse",
+  "custom": true
+},
+"ADVANCED-3": {
+  "name": "Anti-RE / Anti-Analysis Defeat",
+  "description": "Bypass self-debugging, checksums, and environment checks.",
+  "test_note": "TitanHide + ScyllaHide; patch timing & integrity checks",
+  "category": "9_ADVANCED",
+  "platform": "reverse",
+  "custom": true
+}
 
 };
 
