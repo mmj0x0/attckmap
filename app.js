@@ -1913,7 +1913,228 @@ const ATTACK_DB = {
   "category": "9_ADVANCED",
   "platform": "reverse",
   "custom": true
-}
+},
+
+// === ICS HARDWARE RE — COMPLETE ATTACK_DB BLOCK (paste into ATTACK_DB) ===
+"ICSRECON-1": {
+  "name": "ICS Hardware Teardown & PCB Mapping",
+  "description": "Identify main MCU/SoC, flash, RAM, debug headers, and power domains on ICS/PLC/RTU boards.",
+  "test_note": "Visual inspection + multimeter continuity; label all test points; use KiCad/Altium for netlist if possible",
+  "category": "1_ICSRECON",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"ICSRECON-2": {
+  "name": "Chip Identification (MCU/FPGA/Flash)",
+  "description": "Determine exact part numbers via markings, die shots, or package analysis.",
+  "test_note": "Magnifier + datasheets; use ChipDB or siliconpr0n.org; decap if needed",
+  "category": "1_ICSRECON",
+  "platform": "ics-hardware",
+  "custom": true
+},
+
+"SPI-1": {
+  "name": "SPI Flash Identification & Pinout",
+  "description": "Locate and map SPI flash chip pins (CS, CLK, MOSI, MISO, WP, HOLD).",
+  "test_note": "Bus Pirate / Shikra / Saleae Logic + PulseView; flashrom -p linux_spi -c auto",
+  "category": "2_SPI",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"SPI-2": {
+  "name": "SPI Flash Dumping (In-Circuit)",
+  "description": "Extract firmware from SPI flash without desoldering (if possible).",
+  "test_note": "flashrom -p linux_spi:dev=/dev/spidev0.0 -r firmware.bin; or Bus Pirate 'spi' mode",
+  "category": "2_SPI",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"SPI-3": {
+  "name": "SPI Flash Chip-Off Extraction",
+  "description": "Hot-air desolder + programmer dump of SOIC-8 / WSON / BGA flash.",
+  "test_note": "CH341A / TL866II / RT809H programmer; verify with binwalk -M firmware.bin",
+  "category": "2_SPI",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"SPI-4": {
+  "name": "SPI Flash Modification & Reprogramming",
+  "description": "Patch firmware, inject backdoor, or corrupt config in SPI flash.",
+  "test_note": "flashrom -p linux_spi -w modified.bin; or programmer write",
+  "category": "2_SPI",
+  "platform": "ics-hardware",
+  "mitre_ref": "T1190",
+  "custom": true
+},
+
+"UART-1": {
+  "name": "UART Console Identification & Pinout",
+  "description": "Locate TX/RX/GND/VCC pins on ICS boards (common on PLCs/RTUs).",
+  "test_note": "Multimeter + logic analyzer; Bus Pirate 'uart' mode; JTAGulator UART mode",
+  "category": "3_UART",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"UART-2": {
+  "name": "UART Console Access (Bootloader / Shell)",
+  "description": "Interrupt boot process and gain root/shell on ICS devices.",
+  "test_note": "minicom / screen / PuTTY at 115200 8N1; send break or 'Enter' during boot",
+  "category": "3_UART",
+  "platform": "ics-hardware",
+  "mitre_ref": "T1190",
+  "custom": true
+},
+"UART-3": {
+  "name": "UART Command Injection / Backdoor",
+  "description": "Send malicious commands or enable hidden debug modes via console.",
+  "test_note": "echo 'enable debug' > /dev/ttyUSB0; or script automated payload delivery",
+  "category": "3_UART",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"UART-4": {
+  "name": "UART Firmware Dumping via Serial Protocol",
+  "description": "Use bootloader commands (XModem/YModem) to dump flash over UART.",
+  "test_note": "U-Boot 'md' / 'mmc read'; or device-specific dump command",
+  "category": "3_UART",
+  "platform": "ics-hardware",
+  "custom": true
+},
+
+"JTAG-1": {
+  "name": "JTAG Port Identification & Pinout",
+  "description": "Locate TCK/TMS/TDI/TDO/TRST pins on ICS hardware.",
+  "test_note": "JTAGulator / Bus Pirate JTAG mode / multimeter continuity",
+  "category": "4_JTAG",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"JTAG-2": {
+  "name": "JTAG Debugging (OpenOCD / GDB)",
+  "description": "Attach to MCU/SoC via JTAG for live memory read/write and debugging.",
+  "test_note": "openocd -f interface/buspirate.cfg -f target/stm32.cfg; gdb-multiarch",
+  "category": "4_JTAG",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"JTAG-3": {
+  "name": "JTAG Firmware Extraction / Flash Read",
+  "description": "Dump internal flash or external memory via JTAG boundary scan / memory commands.",
+  "test_note": "openocd 'flash read_bank 0 firmware.bin 0x0 0x100000'",
+  "category": "4_JTAG",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"JTAG-4": {
+  "name": "JTAG Lock Bypass / Security Fuse Defeat",
+  "description": "Bypass JTAG lock bits or security fuses on protected ICS chips.",
+  "test_note": "Voltage glitching / timing attack on reset; or specific vendor bypass scripts",
+  "category": "4_JTAG",
+  "platform": "ics-hardware",
+  "custom": true
+},
+
+"I2C-1": {
+  "name": "I2C Bus Scanning & Device Enumeration",
+  "description": "Discover I2C devices (EEPROM, sensors, RTC) on ICS hardware.",
+  "test_note": "Bus Pirate 'i2c' mode; i2cdetect -y 1; Saleae + I2C decoder",
+  "category": "5_I2C",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"I2C-2": {
+  "name": "I2C EEPROM / Config Dumping",
+  "description": "Extract configuration or calibration data from I2C EEPROMs.",
+  "test_note": "i2cget / i2cdump; Bus Pirate 'i2c' read commands",
+  "category": "5_I2C",
+  "platform": "ics-hardware",
+  "custom": true
+},
+
+"DEBUG-1": {
+  "name": "SWD (Serial Wire Debug) Port Access",
+  "description": "Alternative to JTAG on Cortex-M based ICS controllers.",
+  "test_note": "openocd -f interface/cmsis-dap.cfg -f target/stm32.cfg; or Raspberry Pi SWD",
+  "category": "6_OTHERDEBUG",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"DEBUG-2": {
+  "name": "Other Debug Ports (SWIM, BDM, ICSP)",
+  "description": "Identify and exploit vendor-specific debug interfaces.",
+  "test_note": "ST-Link for SWIM; Background Debug Mode (BDM) for Freescale/NXP",
+  "category": "6_OTHERDEBUG",
+  "platform": "ics-hardware",
+  "custom": true
+},
+
+"FPGA-1": {
+  "name": "FPGA Bitstream Identification & Extraction",
+  "description": "Locate and dump FPGA configuration bitstream (Xilinx, Intel/Altera).",
+  "test_note": "binwalk on firmware; or JTAG read of configuration memory",
+  "category": "7_FPGABITSTREAM",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"FPGA-2": {
+  "name": "FPGA Bitstream Reverse Engineering",
+  "description": "Decompress, analyze, and modify FPGA bitstream for logic tampering.",
+  "test_note": "bit2ncd / prjxray / Xilinx Vivado bitstream tools; Ghidra with FPGA plugins",
+  "category": "7_FPGABITSTREAM",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"FPGA-3": {
+  "name": "FPGA Side-Channel / Fault Injection",
+  "description": "Voltage/clock glitching on FPGA to bypass bitstream security.",
+  "test_note": "ChipWhisperer or custom glitching setup; target AES/CRC in bitstream",
+  "category": "7_FPGABITSTREAM",
+  "platform": "ics-hardware",
+  "custom": true
+},
+
+"GHIDRA-1": {
+  "name": "Firmware Loading in Ghidra (Raw Binary)",
+  "description": "Import raw firmware dump; set correct base address and processor.",
+  "test_note": "Ghidra → File → Import → Raw Binary; set language (ARM:LE:32:default) and base addr",
+  "category": "8_FIRMWAREGHIDRA",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"GHIDRA-2": {
+  "name": "RTOS Awareness in Ghidra (FreeRTOS / ThreadX / Zephyr)",
+  "description": "Apply RTOS-specific plugins and structures for task lists, semaphores, etc.",
+  "test_note": "Ghidra RTOS plugins; search for 'FreeRTOS' strings; apply data types for TCB",
+  "category": "8_FIRMWAREGHIDRA",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"GHIDRA-3": {
+  "name": "Chip-Specific Processor & Peripheral Loading",
+  "description": "Load vendor SVD files or custom SLEIGH for STM32, NXP, TI, etc.",
+  "test_note": "Ghidra → SVD-Loader extension; import CMSIS-SVD XML for peripheral registers",
+  "category": "8_FIRMWAREGHIDRA",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"GHIDRA-4": {
+  "name": "Interrupt Vector Table & Bootloader Analysis",
+  "description": "Locate IVT, reset handler, and boot code in ICS firmware.",
+  "test_note": "Ghidra: search for known vector table patterns; analyze reset vector",
+  "category": "8_FIRMWAREGHIDRA",
+  "platform": "ics-hardware",
+  "custom": true
+},
+"GHIDRA-5": {
+  "name": "Firmware Patching in Ghidra + Export",
+  "description": "Patch logic, bypass checks, or inject shellcode; export modified binary.",
+  "test_note": "Ghidra Patch Instruction → Export → Raw Binary; re-flash via SPI/JTAG",
+  "category": "8_FIRMWAREGHIDRA",
+  "platform": "ics-hardware",
+  "custom": true
+},
+
+
 
 };
 
