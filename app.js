@@ -1232,7 +1232,57 @@ const ATTACK_DB = {
   "category": "5_ETHERNETIPUNAUTH",
   "platform": "ethernetip",
   "custom": true
-}
+},
+
+// === MODBUS/TCP ===
+"MODBUSRECON-1": {
+  "name": "Modbus/TCP Device Fingerprinting",
+  "description": "Scan for Modbus servers and slave IDs.",
+  "test_note": "modbus-cli -p 502 or nmap -sV --script modbus-discover",
+  "category": "1_MODBUSRECON",
+  "platform": "modbus",
+  "custom": true
+},
+"MODBUSTRAFFIC-1": {
+  "name": "Modbus/TCP Traffic Interception",
+  "description": "Capture function code exchanges.",
+  "test_note": "Wireshark modbus filter",
+  "category": "2_MODBUSTRAFFIC",
+  "platform": "modbus",
+  "mitre_ref": "T1040"
+},
+"MODBUSREPLAY-1": {
+  "name": "Modbus/TCP Replay Attack",
+  "description": "Replay Write Single Register / Coil commands.",
+  "test_note": "Capture 0x06/0x05 → scapy replay; no nonce",
+  "category": "3_MODBUSREPLAY",
+  "platform": "modbus",
+  "custom": true
+},
+"MODBUSDOS-1": {
+  "name": "Modbus/TCP Function Code 0x08 Diagnostics Flood",
+  "description": "Force reboot via diagnostics reset (Dragos/FrostyGoop style).",
+  "test_note": "modbus-cli write 0x08 sub 0x01; repeated",
+  "category": "4_MODBUSDOS",
+  "platform": "modbus",
+  "custom": true
+},
+"MODBUSUNAUTH-1": {
+  "name": "Modbus/TCP Unauthenticated Write",
+  "description": "Write holding registers/coils (function 0x06/0x10).",
+  "test_note": "modbus-cli write 0x06 40001 0xFFFF",
+  "category": "5_MODBUSUNAUTH",
+  "platform": "modbus",
+  "mitre_ref": "T1565"
+},
+"MODBUSUNAUTH-2": {
+  "name": "Modbus/TCP Function Code Abuse",
+  "description": "Execute any function code (0x01–0x7F).",
+  "test_note": "modbus-cli --fc 0x05 --value 0xFF00",
+  "category": "5_MODBUSUNAUTH",
+  "platform": "modbus",
+  "custom": true
+},
 
 };
 
