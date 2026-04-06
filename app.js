@@ -294,7 +294,7 @@ const ATTACK_DB = {
   "platform": "windows"
 },
 
-  // === LINUX THICK CLIENT — COMPLETE ATTACK_DB BLOCK (replace existing linux entries) ===
+  // === LINUX THICK CLIENT ===
 "RECON-1": {
   "name": "Binary Fingerprinting (ELF)",
   "description": "Identify architecture, PIE, RELRO, NX, stripping, and linked libraries.",
@@ -473,6 +473,172 @@ const ATTACK_DB = {
   "category": "11_IPC",
   "platform": "linux"
 },
+
+// === ANDROID MOBILE ===
+"ARECON-1": {
+  "name": "APK Fingerprint & Manifest Analysis",
+  "description": "Extract package name, permissions, exported components, debuggable flag.",
+  "test_note": "apktool d app.apk; cat AndroidManifest.xml | grep -E 'exported|permission|debuggable|allowBackup'",
+  "category": "1_ARECON",
+  "platform": "android",
+  "custom": true
+},
+"ARECON-2": {
+  "name": "Static APK Analysis (MobSF)",
+  "description": "Automated static scan for hardcoded secrets, insecure configs, and surface mapping.",
+  "test_note": "mobsf app.apk; review Manifest, Strings, and API calls in report",
+  "category": "1_ARECON",
+  "platform": "android",
+  "custom": true
+},
+
+"ASTATIC-1": {
+  "name": "Decompilation & Code Review",
+  "description": "Decompile to Java/Kotlin and search for logic flaws.",
+  "test_note": "jadx-gui app.apk; grep -rE 'password|token|secret|api_key' sources/",
+  "category": "2_ASTATIC",
+  "platform": "android",
+  "mitre_ref": "CWE-327",
+  "custom": true
+},
+"ASTATIC-2": {
+  "name": "Hardcoded Secrets & Strings",
+  "description": "Credentials, keys, or tokens embedded in code or resources.",
+  "test_note": "strings app.apk | grep -Ei 'pass|key|token|secret'; or MobSF Strings tab",
+  "category": "2_ASTATIC",
+  "platform": "android",
+  "mitre_ref": "T1552.001"
+},
+
+"ATRAFFIC-1": {
+  "name": "Intercept HTTP/HTTPS Traffic",
+  "description": "Capture and tamper with all outbound API calls.",
+  "test_note": "Burp + Android proxy (Wi-Fi advanced settings); set http_proxy env if needed",
+  "category": "3_ATRAFFIC",
+  "platform": "android",
+  "mitre_ref": "T1048"
+},
+"ATRAFFIC-2": {
+  "name": "Broken TLS / Certificate Pinning",
+  "description": "Weak pinning, expired certs, or no validation.",
+  "test_note": "Objection: android sslpinning disable; or Frida script + Burp CA",
+  "category": "3_ATRAFFIC",
+  "platform": "android",
+  "mitre_ref": "CWE-295"
+},
+
+"ACRYPTO-1": {
+  "name": "Weak Cryptography Implementation",
+  "description": "Hardcoded keys, insecure algorithms (DES, MD5), improper IV/nonce.",
+  "test_note": "grep -rE 'Cipher|DES|MD5|SHA1' sources/; check KeyStore usage",
+  "category": "4_ACRYPTO",
+  "platform": "android",
+  "mitre_ref": "CWE-327"
+},
+"ACRYPTO-2": {
+  "name": "Insecure Random Number Generation",
+  "description": "Use of Math.random or weak SecureRandom.",
+  "test_note": "grep -rE 'Random|SecureRandom' sources/; Frida hook java.util.Random",
+  "category": "4_ACRYPTO",
+  "platform": "android",
+  "custom": true
+},
+
+"ASTORAGE-1": {
+  "name": "Insecure Local Storage (SharedPreferences / SQLite)",
+  "description": "Plaintext credentials or PII in private files/DBs.",
+  "test_note": "adb shell run-as com.app.id cat /data/data/com.app.id/shared_prefs/*.xml; DB Browser for SQLite",
+  "category": "5_ASTORAGE",
+  "platform": "android",
+  "mitre_ref": "T1555"
+},
+"ASTORAGE-2": {
+  "name": "Backup & ADB Extraction Abuse",
+  "description": "allowBackup=true exposes data via adb backup.",
+  "test_note": "adb backup -apk com.app.id; unpack with Android Backup Extractor",
+  "category": "5_ASTORAGE",
+  "platform": "android",
+  "custom": true
+},
+
+"AAUTH-1": {
+  "name": "Client-Side Authentication Flaws",
+  "description": "Auth logic performed only on device (bypass via Frida).",
+  "test_note": "Objection: android hooking list; Frida hook login methods and force return true",
+  "category": "6_AAUTH",
+  "platform": "android",
+  "mitre_ref": "CWE-602"
+},
+"AAUTH-2": {
+  "name": "Insecure Session Management",
+  "description": "Tokens stored in plaintext or predictable sessions.",
+  "test_note": "Frida: trace java.net.CookieManager; check SharedPreferences for tokens",
+  "category": "6_AAUTH",
+  "platform": "android",
+  "custom": true
+},
+
+"APLATFORM-1": {
+  "name": "Exported Components (Activities/Services)",
+  "description": "Deep-link or intent hijacking via exported components.",
+  "test_note": "apktool d; check android:exported=true; adb shell am start -n com.app/.VulnActivity",
+  "category": "7_APLATFORM",
+  "platform": "android",
+  "mitre_ref": "T1579"
+},
+"APLATFORM-2": {
+  "name": "WebView JavaScript Interface Injection",
+  "description": "JS-to-native bridge allows arbitrary code execution.",
+  "test_note": "grep -r 'addJavascriptInterface' sources/; test XSS payload",
+  "category": "7_APLATFORM",
+  "platform": "android",
+  "mitre_ref": "CWE-79"
+},
+
+"AREVERSE-1": {
+  "name": "Root Detection Bypass",
+  "description": "App checks for su, Magisk, or known root paths.",
+  "test_note": "Objection: android root disable; Frida script hook root detection methods",
+  "category": "8_AREVERSE",
+  "platform": "android",
+  "custom": true
+},
+"AREVERSE-2": {
+  "name": "Anti-Tampering & RASP Checks",
+  "description": "Integrity checks, debugger detection, emulator detection.",
+  "test_note": "Frida: bypass emulator checks; hook PackageManager.getInstallerPackageName",
+  "category": "8_AREVERSE",
+  "platform": "android",
+  "custom": true
+},
+
+"ARUNTIME-1": {
+  "name": "Runtime Memory & Heap Inspection",
+  "description": "Sensitive data in RAM (tokens, keys) via Frida.",
+  "test_note": "frida -U -f com.app.id -l memory_dump.js; objection memory dump",
+  "category": "9_ARUNTIME",
+  "platform": "android",
+  "mitre_ref": "T1003"
+},
+"ARUNTIME-2": {
+  "name": "Dynamic Method Hooking (Frida/Objection)",
+  "description": "Bypass any client-side logic at runtime.",
+  "test_note": "objection -g com.app.id explore; android hooking set return_value true",
+  "category": "9_ARUNTIME",
+  "platform": "android",
+  "custom": true
+},
+
+"AIPC-1": {
+  "name": "Insecure Content Provider / IPC Abuse",
+  "description": "Exposed providers allow data leakage or injection.",
+  "test_note": "drozer console; run scanner.provider.finduris; query content://com.app.provider",
+  "category": "10_AIPC",
+  "platform": "android",
+  "mitre_ref": "T1559"
+},
+
+
 
 };
 
